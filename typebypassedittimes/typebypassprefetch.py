@@ -3,8 +3,26 @@ import csv
 from datetime import datetime, timedelta
 
 csv_file = r"prefetch_data.csv"
-
 time_threshold = timedelta(seconds=60)
+
+datetime_formats = [
+    '%d/%m/%Y %H:%M:%S',
+    '%m/%d/%Y %H:%M:%S',
+    '%d/%m/%Y %I:%M:%S %p',
+    '%m/%d/%Y %I:%M:%S %p',
+    '%Y/%m/%d %H:%M:%S',
+    '%Y/%d/%m %H:%M:%S',
+    '%Y/%m/%d %I:%M:%S %p',
+    '%Y/%d/%m %I:%M:%S %p',
+    '%d-%m-%Y %H:%M:%S',
+    '%m-%d-%Y %H:%M:%S',
+    '%d-%m-%Y %I:%M:%S %p',
+    '%m-%d-%Y %I:%M:%S %p',
+    '%Y-%m-%d %H:%M:%S',
+    '%Y-%d-%m %H:%M:%S',
+    '%Y-%m-%d %I:%M:%S %p',
+    '%Y-%d-%m %I:%M:%S %p'
+]
 
 def clear_screen():
     if os.name == 'nt':
@@ -12,45 +30,16 @@ def clear_screen():
     else:
         os.system('clear')
 
-def get_datetime_format():
-    print("Choose a Date and Time format:")
-    print("")
-    print("1. Military Time, Day.Month.Year")
-    print("2. Military Time, Month.Day.Year")
-    print("3. 12 Hour Clock, Day.Month.Year")
-    print("4. 12 Hour Clock, Month.Day.Year")
-    print("5. Military Time, Year.Month.Day")
-    print("6. Military Time, Year.Day.Month")
-    print("7. 12 Hour Clock, Year.Month.Day")
-    print("8. 12 Hour Clock, Year.Day.Month")
-    print("")
-    choice = input("Enter your choice (1-8): ").strip()
-
-    if choice == '1':
-        return '%d/%m/%Y %H:%M:%S'
-    elif choice == '2':
-        return '%m/%d/%Y %H:%M:%S'
-    elif choice == '3':
-        return '%d/%m/%Y %I:%M:%S %p'
-    elif choice == '4':
-        return '%m/%d/%Y %I:%M:%S %p'
-    elif choice == '5':
-        return '%Y/%m/%d %H:%M:%S'
-    elif choice == '6':
-        return '%Y/%d/%m %H:%M:%S'
-    elif choice == '7':
-        return '%Y/%m/%d %I:%M:%S %p'
-    elif choice == '8':
-        return '%Y/%d/%m %I:%M:%S %p'
-    else:
-        print("\nInvalid choice. Please enter a number between 1 and 8.\n")
-        clear_screen()
-        return get_datetime_format()
+def try_parse_datetime(date_str):
+    for fmt in datetime_formats:
+        try:
+            return datetime.strptime(date_str, fmt), fmt
+        except ValueError:
+            continue
+    raise ValueError(f"Time data '{date_str}' does not match any known format.")
 
 def check_prefetch_times(csv_file):
     found_suspicious = False
-
-    datetime_format = get_datetime_format()
 
     try:
         with open(csv_file, newline='') as csvfile:
@@ -64,10 +53,13 @@ def check_prefetch_times(csv_file):
                 mod_time_str = row[2].strip()
                 run_times_str = row[7].strip()
 
-                mod_time = datetime.strptime(mod_time_str, datetime_format)
-
-                most_recent_run_time_str = run_times_str.split(',')[0].strip()
-                most_recent_run_time = datetime.strptime(most_recent_run_time_str, datetime_format)
+                try:
+                    mod_time, mod_format = try_parse_datetime(mod_time_str)
+                    most_recent_run_time_str = run_times_str.split(',')[0].strip()
+                    most_recent_run_time, run_format = try_parse_datetime(most_recent_run_time_str)
+                except ValueError as e:
+                    print(f"An error occurred: {e}")
+                    continue
 
                 time_difference = (mod_time - most_recent_run_time).total_seconds()
 
@@ -87,5 +79,4 @@ def check_prefetch_times(csv_file):
         print(f"An error occurred: {e}")
 
 check_prefetch_times(csv_file)
-
 input()
