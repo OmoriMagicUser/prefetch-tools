@@ -4,7 +4,7 @@ Prefetch Tools - Logic Overview
 
 Explanation:
 The command below clones the data from File1.pf into File2.pf. TypeBypassHashes scans every prefetch file on your computer to detect any two files that share the same hash. If a match is found, the tool will flag it.
-
+**test**
 Command:
 Type [File1.pf] > [File2.pf]
 
