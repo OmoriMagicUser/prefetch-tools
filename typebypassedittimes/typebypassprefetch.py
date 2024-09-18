@@ -64,10 +64,20 @@ def check_prefetch_times(csv_file):
                 mod_time_str = row[2].strip()
                 run_times_str = row[7].strip()
 
-                mod_time = datetime.strptime(mod_time_str, datetime_format)
+                try:
+                    mod_time = datetime.strptime(mod_time_str, datetime_format)
+                except ValueError as e:
+                    print(f"Error parsing modification time: {mod_time_str}")
+                    print(f"Error: {e}")
+                    continue
 
-                most_recent_run_time_str = run_times_str.split(',')[0].strip()
-                most_recent_run_time = datetime.strptime(most_recent_run_time_str, datetime_format)
+                try:
+                    most_recent_run_time_str = run_times_str.split(',')[0].strip()
+                    most_recent_run_time = datetime.strptime(most_recent_run_time_str, datetime_format)
+                except ValueError as e:
+                    print(f"Error parsing most recent run time: {most_recent_run_time_str}")
+                    print(f"Error: {e}")
+                    continue
 
                 time_difference = (mod_time - most_recent_run_time).total_seconds()
 
