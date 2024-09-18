@@ -19,8 +19,12 @@ def get_datetime_format():
     print("2. Military Time, Month.Day.Year")
     print("3. 12 Hour Clock, Day.Month.Year")
     print("4. 12 Hour Clock, Month.Day.Year")
+    print("5. Military Time, Year.Month.Day")
+    print("6. Military Time, Year.Day.Month")
+    print("7. 12 Hour Clock, Year.Month.Day")
+    print("8. 12 Hour Clock, Year.Day.Month")
     print("")
-    choice = input("Enter your choice (1-4): ").strip()
+    choice = input("Enter your choice (1-8): ").strip()
 
     if choice == '1':
         return '%d/%m/%Y %H:%M:%S'
@@ -30,8 +34,16 @@ def get_datetime_format():
         return '%d/%m/%Y %I:%M:%S %p'
     elif choice == '4':
         return '%m/%d/%Y %I:%M:%S %p'
+    elif choice == '5':
+        return '%Y/%m/%d %H:%M:%S'
+    elif choice == '6':
+        return '%Y/%d/%m %H:%M:%S'
+    elif choice == '7':
+        return '%Y/%m/%d %I:%M:%S %p'
+    elif choice == '8':
+        return '%Y/%d/%m %I:%M:%S %p'
     else:
-        print("\nInvalid choice. Please enter a number between 1 and 4.\n")
+        print("\nInvalid choice. Please enter a number between 1 and 8.\n")
         clear_screen()
         return get_datetime_format()
 
